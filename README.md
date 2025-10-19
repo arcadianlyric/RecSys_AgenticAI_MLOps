@@ -104,7 +104,7 @@ Based on recent advances from RecSys 2025 and KDD 2025, two major trends are res
 
 **Challenge**: Genetic variant curation—connecting genotype to phenotype—requires extensive manual interpretation by skilled curators to extract biological and clinical meaning from phased VCF files. This process is time-consuming, limits throughput, and suffers from inter-curator variability.
 
-**Solution**: A true agentic AI system integrating planning, reflection, and multi-agent collaboration to automate variant curation for our product [cWGS](https://github.com/Complete-Genomics/DNBSEQ_Complete_WGS/tree/main), leveraging RAG-enhanced analysis for improved accuracy and context.
+**Solution**: A true agentic AI system integrating planning, reflection, and multi-agent collaboration to automate variant curation for our product **[cWGS](https://github.com/Complete-Genomics/DNBSEQ_Complete_WGS/tree/main)**, leveraging RAG-enhanced analysis for improved accuracy and context.
 
 **Agentic Architecture**:
 
