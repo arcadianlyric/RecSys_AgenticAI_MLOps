@@ -1,6 +1,6 @@
 # Machine Learning Engineering Portfolio
 
-## Recommendation Systems, Agentic AI, and ML in Production
+## Recommendation Systems, Agentic AI, and MLOps in Production
 
 This portfolio showcases my expertise in building production-ready machine learning systems, with a focus on recommendation systems, agentic AI workflows, and scalable ML infrastructure.
 
@@ -153,7 +153,7 @@ Planning → Execution (Multi-Agent) → Reflection → Refinement → Report
 
 ---
 
-## 🚀 ML in Production & System Design
+## 🚀 MLOps in Production & System Design
 
 ### Cloud-Native MLOps Platform for Taxi Tip Prediction
 
