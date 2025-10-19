@@ -157,48 +157,99 @@ Planning → Execution (Multi-Agent) → Reflection → Refinement → Report
 
 ### Cloud-Native MLOps Platform for Taxi Tip Prediction
 
-**[MLOps_taxi](https://github.com/arcadianlyric/MLops_taxi)** | End-to-End ML Pipeline
+**[MLOps_taxi](https://github.com/arcadianlyric/MLops_taxi)** | Production-Grade ML Infrastructure
 
-**Challenge**: Building production-ready ML systems requires more than just model training—it demands robust infrastructure for data ingestion, feature engineering, model serving, monitoring, and continuous deployment.
+**Challenge**: Building enterprise-ready ML systems requires comprehensive infrastructure spanning the entire ML lifecycle—from automated training pipelines and feature stores to real-time monitoring, drift detection, and continuous deployment. Most ML projects fail to reach production due to the complexity of integrating these components.
 
-**Solution**: A comprehensive MLOps platform demonstrating end-to-end best practices from raw data to production deployment, using the Chicago taxi dataset for tip prediction.
+**Solution**: A complete MLOps platform implementing industry best practices with 10+ production components. Demonstrates end-to-end automation from data versioning to model monitoring using the Chicago taxi dataset for tip prediction (77% accuracy).
 
 **System Architecture**:
 ```
-Browser (UI) ←→ Streamlit (Port 8501) ←→ FastAPI (Port 8000) ←→ TFX Pipeline
+┌─────────────────────────────────────────────────────────────┐
+│  Browser UI (Streamlit:8501) ←→ API (FastAPI:8000)         │
+│         ↓                              ↓                     │
+│  TFX Pipeline ←→ Feast ←→ MLflow ←→ Kafka ←→ Prometheus    │
+│         ↓                              ↓                     │
+│  MLMD Lineage    DVC Versioning    Loki Logs    Grafana    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Key Components**:
+**Key Components** (15,000+ lines of code, 46 modules):
 
-1. **TFX (TensorFlow Extended) Training Pipeline**
-   - **Data Validation**: Schema inference and anomaly detection
-   - **Transform**: Feature engineering with Apache Beam for distributed processing
-   - **Trainer**: Model training with hyperparameter tuning
-   - **Evaluator**: Model validation against baseline metrics
-   - **Pusher**: Automated model deployment to serving infrastructure
+1. **ML Pipeline Automation (TFX)**
+   - **8-Stage Pipeline**: ExampleGen → StatisticsGen → SchemaGen → ExampleValidator → Transform → Trainer → Evaluator → Pusher
+   - **Apache Beam**: Distributed data processing for scalability
+   - **MLMD Integration**: Complete lineage tracking for data, models, and artifacts
+   - **Custom Components**: Data drift monitor, Feast pusher, model monitoring
 
-2. **Microservices Architecture**
-   - **FastAPI Backend**: RESTful prediction API with health checks and API documentation
-   - **Streamlit Frontend**: Interactive UI for single/batch predictions and visualization
-   - **Docker Compose**: Containerized deployment with service orchestration
+2. **Feature Engineering & Serving**
+   - **Feast Feature Store**: Online (Redis) + Offline (Parquet) stores for feature management
+   - **Real-time Processing**: Kafka stream processing for live feature computation
+   - **Feature Versioning**: Track and version feature definitions
+   - **API Integration**: RESTful endpoints for feature retrieval
 
-3. **Production-Ready Features**
-   - **Scalability**: Apache Beam integration for distributed data processing
-   - **Monitoring**: Built-in health checks and logging
-   - **Versioning**: Model versioning and rollback capabilities
-   - **API Documentation**: Auto-generated OpenAPI/Swagger docs
+3. **Model Management (MLflow)**
+   - **Model Registry**: Version control, stage transitions (Staging/Production)
+   - **Experiment Tracking**: Metrics, parameters, and artifacts logging
+   - **Model Comparison**: A/B testing and performance benchmarking
+   - **Deployment Automation**: Seamless model promotion workflow
 
-**End-to-End Workflow**:
-1. **EDA & Data Cleaning**: Exploratory analysis and preprocessing
-2. **Feature Engineering**: Temporal features, categorical encoding, normalization
-3. **Model Development**: Algorithm selection and training
-4. **Evaluation**: Performance metrics and validation
-5. **Deployment**: Containerized serving with CI/CD
-6. **Monitoring**: Performance tracking and drift detection
+4. **Stream Processing (Kafka)**
+   - **9 Topics**: Raw data, features, predictions, metrics, alerts, quality checks
+   - **Real-time Inference**: Low-latency prediction pipeline
+   - **Event-Driven Architecture**: Decoupled microservices communication
+   - **Message Processors**: Producer/consumer patterns for data flow
 
-**Tech Stack**: TensorFlow Extended (TFX), Apache Beam, FastAPI, Streamlit, Docker, Docker Compose
+5. **Monitoring & Observability**
+   - **Prometheus Metrics**: API latency, throughput, model performance, resource usage
+   - **Grafana Dashboards**: Real-time visualization of system health
+   - **Loki Log Aggregation**: Centralized logging with LogQL queries
+   - **Data Drift Detection**: Statistical analysis with KS test, alerts on distribution shifts
+   - **Alert Manager**: Multi-channel notifications (Email, Slack) for critical events
 
-**Impact**: Demonstrates industry-standard MLOps practices with reproducible, scalable, and maintainable ML pipelines ready for production deployment.
+6. **Data & Model Versioning**
+   - **DVC Integration**: Git-like version control for datasets and models
+   - **Remote Storage**: S3/GCS/Azure blob support
+   - **Reproducibility**: Track data lineage and model provenance
+   - **Rollback Capability**: Revert to previous data/model versions
+
+7. **Infrastructure & Deployment**
+   - **Docker Compose**: Local development with 2 services (API + UI)
+   - **Kubernetes**: Production deployment with 13 manifests, auto-scaling, health checks
+   - **Microservices**: FastAPI backend + Streamlit frontend
+   - **CI/CD Ready**: Containerized builds, automated testing
+
+**Production Workflow**:
+1. **Data Ingestion**: CSV → TFX ExampleGen → Validation → Schema generation
+2. **Feature Engineering**: Transform component → Feast materialization → Online/offline stores
+3. **Model Training**: TFX Trainer → MLflow tracking → Model registry → Version management
+4. **Deployment**: Docker build → Kubernetes deployment → Health checks → API serving
+5. **Real-time Inference**: Kafka producer → Feature enrichment → Model prediction → Result streaming
+6. **Monitoring**: Prometheus metrics → Grafana dashboards → Drift detection → Alert Manager
+7. **Continuous Improvement**: Performance analysis → Retraining triggers → Automated deployment
+
+**Technical Highlights**:
+- **Scalability**: Apache Beam distributed processing, Kubernetes auto-scaling
+- **Reliability**: Health checks, graceful degradation, error handling
+- **Observability**: Metrics (Prometheus), logs (Loki), traces (MLMD lineage)
+- **Maintainability**: Modular design, API documentation, comprehensive testing
+- **Flexibility**: Pluggable components, configuration-driven, multi-environment support
+
+**Tech Stack**: 
+- **ML Pipeline**: TensorFlow Extended (TFX), Apache Beam, MLMD
+- **Feature Store**: Feast, Redis, Parquet
+- **Model Registry**: MLflow, PostgreSQL
+- **Streaming**: Apache Kafka, Zookeeper
+- **Monitoring**: Prometheus, Grafana, Loki, AlertManager
+- **API/UI**: FastAPI, Streamlit, Uvicorn
+- **Infrastructure**: Docker, Kubernetes, Helm
+- **Data Versioning**: DVC, Git, S3/GCS
+
+**Deployment Options**:
+- **Development**: Docker Compose (4GB RAM, 30-second startup)
+- **Production**: Kubernetes (16GB RAM, 8 CPU, full observability stack)
+
+**Impact**: Demonstrates enterprise-grade MLOps practices with complete implementation of 10+ production components. Provides a reference architecture for building scalable, maintainable ML systems. Code-complete platform ready for production deployment with minimal configuration.
 
 ---
 
