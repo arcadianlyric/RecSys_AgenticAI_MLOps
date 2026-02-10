@@ -33,7 +33,7 @@ Recommendation systems face three critical challenges that directly impact user 
 
 ### 2. CTR Prediction: Production-Ready Hybrid Recommendation System
 
-**[SparrowRecSys](https://github.com/arcadianlyric/RS_movies)** | Movie Recommendation Platform
+**[Movie_RecSys](https://github.com/arcadianlyric/RS_movies)** | Movie Recommendation Platform
 
 **Challenge**: CTR prediction is the cornerstone of recommendation systems, directly determining click probability and platform revenue (advertising, e-commerce). High-accuracy CTR models are essential for both user satisfaction and business value.
 
