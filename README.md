@@ -6,6 +6,84 @@ This portfolio showcases my expertise in building production-ready machine learn
 
 ---
 
+## 🗺️ System Overview
+
+All projects form a unified production ML lifecycle. The diagram below shows how each project maps to a stage in the pipeline.
+
+```mermaid
+flowchart TD
+    DA(["`📊 **Data & Analytics**
+    Google Data Analytics · Bike Share
+    R · Tableau · SQL`"])
+
+    subgraph RECALL["🔍 Candidate Recall"]
+        R1["`**RS_coldstart_graphRAG_LLM**
+        CLIP · BLIP · GraphRAG · Deep Lake
+        Cold-Start via Video History`"]
+        R2["`**AgenticGEM** — Two-Tower
+        Sentence-Transformers · FAISS ANN
+        Millisecond Semantic Recall`"]
+    end
+
+    subgraph RANK["📈 Ranking & Diversity"]
+        RK["`**SparrowRecSys**
+        DeepFM · ALS · NeuralCF
+        3-Layer Hybrid · A/B Testing`"]
+        MO["`**AgenticGEM** — Multi-Obj Ranker
+        CTR + CVR + Fairness · Wide & Deep
+        AUC CTR > 0.78 · P99 < 50ms`"]
+        MAB["`**Multi-Armed Bandit**
+        Thompson Sampling · ε-greedy
+        +15% Long-Term Engagement`"]
+    end
+
+    subgraph RAG["💡 RAG Feature Context"]
+        RAGC["`**AgenticGEM** — Ad Retriever
+        FAISS Vector Index
+        Historical Ad Patterns as Extra Features`"]
+    end
+
+    subgraph MLOPS["⚙️ Feature Store & Serving"]
+        ML["`**MLOps_taxi**
+        TFX · MLflow · Feast · Redis · Kafka
+        FastAPI · Kubernetes · DVC · Prometheus`"]
+    end
+
+    subgraph MONITOR["📡 Monitoring & Drift Detection"]
+        MON["`**MLOps_taxi** + **AgenticGEM**
+        Evidently · KS Test · Prometheus
+        Grafana Dashboards · AlertManager`"]
+    end
+
+    subgraph RETRAIN["🤖 Agentic Retraining Loop"]
+        LG["`**AgenticGEM** — LangGraph
+        DriftMonitor → Evaluator → Retrainer
+        MPC Cost-Aware · Minutes-Scale`"]
+    end
+
+    subgraph DOMAIN["🧬 Domain Agentic AI"]
+        PVC["`**PhasedVariants_AgenticCurator**
+        RAG · FAISS · PrimeKG · VEP
+        DeepSeek + Grok Dual-Agent Review`"]
+    end
+
+    DA --> R1
+    DA --> RK
+    R1 --> RK
+    R2 --> MO
+    RAGC --> MO
+    RK --> MAB
+    MO --> MAB
+    MAB --> ML
+    ML --> MON
+    MON -- "drift detected" --> LG
+    LG -- "retrain" --> R2
+    LG -- "retrain" --> MO
+    ML -. "phased VCF output" .-> PVC
+```
+
+---
+
 ## 🎯 Recommendation Systems
 
 Recommendation systems face three critical challenges that directly impact user experience and business outcomes. My projects address these challenges using state-of-the-art techniques:
@@ -250,6 +328,64 @@ Planning → Execution (Multi-Agent) → Reflection → Refinement → Report
 - **Production**: Kubernetes (16GB RAM, 8 CPU, full observability stack)
 
 **Impact**: Demonstrates enterprise-grade MLOps practices with complete implementation of 10+ production components. Provides a reference architecture for building scalable, maintainable ML systems. Code-complete platform ready for production deployment with minimal configuration.
+
+---
+
+### Agentic Drift Adaptation for Real-Time Ads Ranking
+
+**[AgenticGEM_DataDrift_AutoRetrainer](https://github.com/arcadianlyric/AgenticGEM_DataDrift_AutoRetrainer)** | LLM-Enhanced Ads Ranking with Automated Retraining
+
+**Challenge**: Production ads ranking degrades silently when user or ad distributions shift. Fixed retrain schedules waste compute; naive threshold rules miss nuanced tradeoffs between drift severity, business metrics, and retrain cost.
+
+**Solution**: An end-to-end reference stack combining semantic recall, multi-objective ranking, RAG-style ad context, and a **LangGraph-driven monitor → evaluate → retrain agent loop** that makes cost-aware decisions rather than applying a single static threshold.
+
+**System Architecture**:
+```
+┌───────────────────────────────────────────────────────┐
+│  Streamlit UI (:8501) ←→ FastAPI (:8000/docs)        │
+│         ↓                        ↓                    │
+│  Two-Tower Recall (FAISS)    Multi-Obj Ranker         │
+│         ↓                        ↓                    │
+│  RAG Ad-Context Retriever   Prometheus Metrics        │
+│         ↓                                             │
+│  LangGraph Agent Loop:                                │
+│    DriftMonitor → DriftEvaluator → Retrainer          │
+│    (Evidently)     (policy)        (MPC-aware)        │
+└───────────────────────────────────────────────────────┘
+```
+
+**Key Technical Achievements**:
+
+1. **Semantic Recall**
+   - Two-tower encoders (text + structured signals) with FAISS ANN for millisecond candidate retrieval
+   - Target: Recall@50 > 0.85
+
+2. **Multi-Objective Ranking**
+   - Joint CTR/CVR-style heads with fairness-aware regularization in a Wide & Deep-style ranker
+   - Target: AUC (CTR) > 0.78, AUC (CVR) > 0.72, P99 latency < 50 ms
+
+3. **RAG-Style Ad Context**
+   - Historical similar-ad patterns retrieved via FAISS vector index as extra ranking features
+
+4. **Agentic Drift Adaptation (LangGraph)**
+   - **DriftMonitor**: Tracks distribution statistics with Evidently; maintains history
+   - **DriftEvaluator**: Policy agent converts drift report into action (retrain / skip / escalate)
+   - **Retrainer**: Orchestrates retraining with MPC-style cost awareness; pluggable backend
+   - **Key design**: Explicit LangGraph state machine — not a single threshold rule; different LLM agents can cover different blind spots
+   - Drift-to-decision in minutes (configuration-dependent)
+
+5. **Production Observability**
+   - FastAPI with Prometheus-friendly metrics hooks
+   - 80+ automated tests across models, RAG, agents, MPC, and API layers
+
+**Tech Stack**:
+- **ML**: PyTorch · sentence-transformers · FAISS · scikit-learn
+- **Agents**: LangGraph · LangChain-core · Evidently
+- **Serving**: FastAPI · Uvicorn · Streamlit
+- **Observability**: prometheus-client · prometheus-fastapi-instrumentator
+- **MLOps (optional)**: MLflow · TFX pipeline module · DVC · Feast · Kafka
+
+**Impact**: Replaces brittle threshold-based retraining triggers with a reasoned, multi-step agent decision loop — reducing unnecessary retraining compute while catching real distribution shifts faster. Provides a clean, test-covered skeleton for production ads systems.
 
 ---
 
