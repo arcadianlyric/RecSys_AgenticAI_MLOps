@@ -235,7 +235,7 @@ Planning → Execution (Multi-Agent) → Reflection → Refinement → Report
 
 ### Cloud-Native MLOps Platform for Taxi Tip Prediction
 
-**[MLOps_taxi](https://github.com/arcadianlyric/MLops_taxi)** | Production-Grade ML Infrastructure
+**[MLOps_taxi](https://github.com/arcadianlyric/Agentic_MLOps_Platform)** | Production-Grade ML Infrastructure
 
 **Challenge**: Building enterprise-ready ML systems requires comprehensive infrastructure spanning the entire ML lifecycle—from automated training pipelines and feature stores to real-time monitoring, drift detection, and continuous deployment. Most ML projects fail to reach production due to the complexity of integrating these components.
 
